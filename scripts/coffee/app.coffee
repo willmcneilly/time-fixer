@@ -4,6 +4,7 @@ class TimeFixerGame
   constructor: () ->
     @game = new Phaser.Game 800, 600, Phaser.AUTO, '', preload: @preload, create: @create, update: @update
     @numTimelords = 5
+    @timelords = null
 
   preload: ->
     console.log ':preload'
@@ -18,6 +19,8 @@ class TimeFixerGame
     @createStars()
     @cursors = @game.input.keyboard.createCursorKeys()
     @createTimelords(@numTimelords)
+    @initTimelords()
+
     @scoreText = @game.add.text 16, 16, 'score: 0', font: '32px arial', fill: '#000'
     @timer = new Phaser.Timer(@game)
     @timer.start()
@@ -31,9 +34,14 @@ class TimeFixerGame
     @timelords = []
     for i in [0..num]
       timelord = new TimeLord(@game, @cursors)
-      timelord.playerControlled = true
-      timelord.velocity = Math.random() * 200
+      timelord.playerControlled = false
+      timelord.active = false
       @timelords.push(timelord)
+
+  initTimelords: ->
+    # set the first timelord to be player controlled
+    @timelords[0].playerControlled = true
+    @timelords[0].active = true
 
   createWorld: ->
     @game.add.sprite 0, 0, 'sky'
