@@ -3,6 +3,7 @@ console.log 'hello phaser'
 class TimeFixerGame
   constructor: () ->
     @game = new Phaser.Game 800, 600, Phaser.AUTO, '', preload: @preload, create: @create, update: @update
+    @numTimelords = 5
 
   preload: ->
     console.log ':preload'
@@ -11,29 +12,15 @@ class TimeFixerGame
     @game.load.image 'star', '/assets/images/star.png'
     @game.load.spritesheet 'dude', '/assets/images/dude.png', 32, 48
 
-  create: ->
+  create: =>
     console.log ':create'
-    @game.add.sprite 0, 0, 'sky'
-    @platforms = @game.add.group()
-    @ground = @platforms.create 0, @game.world.height - 64, 'ground'
-    @ground.scale.setTo 2, 2
-    @ground.body.immovable = true
 
-    @ledge = @platforms.create 400, 400, 'ground'
-    @ledge.body.immovable = true
-
-    @ledge = @platforms.create -150, 250, 'ground'
-    @ledge.body.immovable = true
-
+    @createWorld()
+  
     @game.add.sprite 0, 0, 'star'
     @cursors = @game.input.keyboard.createCursorKeys()
-    @player = new TimeLord(@game, @cursors)
-    @player.playerControlled = true
 
-    @player2 = new TimeLord(@game, @cursors)
-    @player2.sprite.alpha = 0.5
-    @player2.velocity = 100
-    @player2.playerControlled = true
+    @createTimelords(@numTimelords)
     
     @stars = @game.add.group()
    
@@ -47,12 +34,43 @@ class TimeFixerGame
     @timer = new Phaser.Timer(@game)
     @timer.start()
 
-  update: ->
-    @game.physics.collide @player.sprite, @platforms
-    @game.physics.collide @player2.sprite, @platforms
-    @player.update()
-    @player2.update()
+  update: =>
+    for timelord in @timelords 
+      @game.physics.collide timelord.sprite, @platforms
+      timelord.update()
 
+
+    # if(@timer.seconds() > 5)
+    #   @player.playerControlled = false
+    #   @player2.playerControlled = true
+
+    # @player.update()
+    # @player2.update()
+
+  createTimelords: (num) ->
+    @timelords = []
+    for i in [0..num]
+      timelord = new TimeLord(@game, @cursors)
+      timelord.playerControlled = true
+      timelord.velocity = Math.random() * 200
+      @timelords.push(timelord)
+
+  createWorld: ->
+    @game.add.sprite 0, 0, 'sky'
+    @platforms = @game.add.group()
+    @ground = @platforms.create 0, @game.world.height - 64, 'ground'
+    @ground.scale.setTo 2, 2
+    @ground.body.immovable = true
+
+    @ledge = @platforms.create 400, 400, 'ground'
+    @ledge.body.immovable = true
+
+    @ledge = @platforms.create -150, 250, 'ground'
+    @ledge.body.immovable = true
+
+      
+
+      
 
 
 class TimeLord
