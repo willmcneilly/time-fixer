@@ -39,7 +39,8 @@ class TimeFixerGame
       @clearTimer()
       for timelord in @timelords
         timelord.currentMove = 0
-      @playerControlledTimelordNum = @playerControlledTimelordNum + 1
+      if @playerControlledTimelord is undefined
+        return
       @playerControlledTimelord.playerControlled = false
       @playerControlledTimelord.pastControlled = true
       @playerControlledTimelordNum = @playerControlledTimelordNum + 1
@@ -156,7 +157,7 @@ class TimeLord
       @movementHistory.push(timelordPos)
 
     else if @pastControlled
-
+      @sprite.alpha = 0.5
       movement = @movementHistory[@currentMove]
       if movement is undefined
         @currentMove = 0
