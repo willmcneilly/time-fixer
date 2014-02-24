@@ -5,7 +5,8 @@ class TimeFixerGame
     @game = new Phaser.Game 800, 600, Phaser.AUTO, '', preload: @preload, create: @create, update: @update
     @numTimelords = 5
     @timelords = null
-    @playerControllerTimelord = null
+    @playerControlledTimelord = null
+    @playerControlledTimelordNum = null
     @respawnTime = 10
 
   preload: ->
@@ -27,12 +28,26 @@ class TimeFixerGame
     @timer = new Phaser.Timer(@game)
     @timer.start()
 
+  clearTimer: ->
+    @timer.stop()
+    @timer = new Phaser.Timer(@game)
+    @timer.start()
+
   update: =>
     if @timer.seconds() > @respawnTime
-      @playerControllerTimelord.playerControlled = false
-      @playerControllerTimelord.pastControlled = true
-      @playerControlled = @timelords[1]
-      @playerControlled.playerControlled = true
+      console.log(@timer.seconds())
+      @clearTimer()
+      for timelord in @timelords
+        timelord.currentMove = 0
+      @playerControlledTimelordNum = @playerControlledTimelordNum + 1
+      @playerControlledTimelord.playerControlled = false
+      @playerControlledTimelord.pastControlled = true
+      @playerControlledTimelordNum = @playerControlledTimelordNum + 1
+      @playerControlledTimelord = @timelords[@playerControlledTimelordNum]
+      if @playerControlledTimelord is undefined
+        return
+      @playerControlledTimelord.playerControlled = true
+      
 
     for timelord in @timelords 
       @game.physics.collide timelord.sprite, @platforms
@@ -40,17 +55,20 @@ class TimeFixerGame
 
   createTimelords: (num) ->
     @timelords = []
-    for i in [0..num]
+    for i in [0..num-1]
       timelord = new TimeLord(@game, @cursors)
       timelord.playerControlled = false
       timelord.futureControlled = true
       timelord.pastControlled = false
+      timelord.id = i
       @timelords.push(timelord)
 
   initTimelords: ->
     # set the first timelord to be player controlled
-    @timelords[0].playerControlled = true
-    @playerControllerTimelord = @timelords[0]
+    @playerControlledTimelordNum = 0
+    @timelords[@playerControlledTimelordNum ].playerControlled = true
+    @playerControlledTimelord = @timelords[@playerControlledTimelordNum]
+
 
   createWorld: ->
     @game.add.sprite 0, 0, 'sky'
@@ -91,9 +109,11 @@ class TimeLord
     @playerControlled = false
     # Movement Data
     @movementHistory = []
+    @currentMove = 0
     @sprite = null
     @cursors = cursors
     @velocity = 150
+    @id = null
     @create()
     
   create: ->
@@ -137,7 +157,11 @@ class TimeLord
 
     else if @pastControlled
 
-      movement = @movementHistory[0]
+      movement = @movementHistory[@currentMove]
+      if movement is undefined
+        @currentMove = 0
+        return
+
       @sprite.body.velocity.x = 0
       @sprite.body.velocity.y = 0
       if(movement.name == 'leftDown')
@@ -162,8 +186,7 @@ class TimeLord
       if @sprite.y != movement.y
         @sprite.y = movement.y
 
-      @movementHistory.shift()
-
+      @currentMove = @currentMove + 1
 
 
 
