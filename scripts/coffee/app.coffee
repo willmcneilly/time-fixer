@@ -27,6 +27,12 @@ class TimeFixerGame
     @timer.start()
 
   update: =>
+    if @timer.seconds() > 10
+      @playerControllerTimelord.playerControlled = false
+      @playerControlled = @timelords[1]
+      @playerControlled.playerControlled = true
+      @playerControlled.active = true
+
     for timelord in @timelords 
       @game.physics.collide timelord.sprite, @platforms
       timelord.update()
