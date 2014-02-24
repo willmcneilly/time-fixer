@@ -5,6 +5,7 @@ class TimeFixerGame
     @game = new Phaser.Game 800, 600, Phaser.AUTO, '', preload: @preload, create: @create, update: @update
     @numTimelords = 5
     @timelords = null
+    @playerControllerTimelord = null
 
   preload: ->
     console.log ':preload'
@@ -42,6 +43,7 @@ class TimeFixerGame
     # set the first timelord to be player controlled
     @timelords[0].playerControlled = true
     @timelords[0].active = true
+    @playerControllerTimelord = @timelords[0]
 
   createWorld: ->
     @game.add.sprite 0, 0, 'sky'
