@@ -30,19 +30,10 @@ class TimeFixerGame
     @player = new TimeLord(@game, @cursors)
     @player.playerControlled = true
 
-    @player2 = @game.add.sprite 32, @game.world.height - 150, 'dude'
-
-    @player2.alpha = 0.5
-
-
-    @player2.body.gravity.y = null
-    @player2.body.collideWorldBounds = true
-
-
-
-    @player2.animations.add 'left', [0..3], 10, true
-    @player2.animations.add 'right', [5..8], 10, true
-
+    @player2 = new TimeLord(@game, @cursors)
+    @player2.sprite.alpha = 0.5
+    @player2.velocity = 100
+    @player2.playerControlled = true
     
     @stars = @game.add.group()
    
@@ -58,7 +49,9 @@ class TimeFixerGame
 
   update: ->
     @game.physics.collide @player.sprite, @platforms
+    @game.physics.collide @player2.sprite, @platforms
     @player.update()
+    @player2.update()
 
 
 
@@ -74,9 +67,9 @@ class TimeLord
     @movementData = null
     @sprite = null
     @cursors = cursors
+    @velocity = 150
     @create()
     
-
   create: ->
     @sprite = @game.add.sprite 32, @game.world.height - 150, 'dude'
     @sprite.body.gravity.y = null
@@ -86,8 +79,6 @@ class TimeLord
     @sprite.animations.add 'right', [5..8], 10, true
 
   update: ->
-    
-
     @sprite.body.velocity.x = 0
     @sprite.body.velocity.y = 0
 
@@ -98,21 +89,21 @@ class TimeLord
 
     if @playerControlled
       if @cursors.left.isDown
-        @sprite.body.velocity.x = -150
+        @sprite.body.velocity.x = -@velocity
         @sprite.animations.play 'left'
         #playerPos['name'] = 'leftDown'
         
       else if @cursors.right.isDown
-        @sprite.body.velocity.x = 150
+        @sprite.body.velocity.x = @velocity
         @sprite.animations.play 'right'
         #playerPos['name'] = 'rightDown'
 
       else if @cursors.up.isDown
-        @sprite.body.velocity.y = -150
+        @sprite.body.velocity.y = -@velocity
         #playerPos['name'] = 'upDown'
 
       else if @cursors.down.isDown
-        @sprite.body.velocity.y = 150
+        @sprite.body.velocity.y = @velocity
         #playerPos['name'] = 'downDown'
       else
         @sprite.animations.stop()
