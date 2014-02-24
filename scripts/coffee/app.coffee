@@ -79,7 +79,7 @@ class TimeLord
     # controlled by player
     @playerControlled = false
     # Movement Data
-    @movementData = null
+    @movementHistory = []
     @sprite = null
     @cursors = cursors
     @velocity = 150
@@ -97,42 +97,61 @@ class TimeLord
     @sprite.body.velocity.x = 0
     @sprite.body.velocity.y = 0
 
-    # playerPos = {
-    #   x: player.x
-    #   y: player.y
-    # }
+    timelordPos = {
+      x: @sprite.x
+      y: @sprite.y
+    }
 
-    if @playerControlled
+    if @playerControlled and @active
       if @cursors.left.isDown
         @sprite.body.velocity.x = -@velocity
         @sprite.animations.play 'left'
-        #playerPos['name'] = 'leftDown'
-        
+        timelordPos['name'] = 'leftDown'       
       else if @cursors.right.isDown
         @sprite.body.velocity.x = @velocity
         @sprite.animations.play 'right'
-        #playerPos['name'] = 'rightDown'
-
+        timelordPos['name'] = 'rightDown'
       else if @cursors.up.isDown
         @sprite.body.velocity.y = -@velocity
-        #playerPos['name'] = 'upDown'
-
+        timelordPos['name'] = 'upDown'
       else if @cursors.down.isDown
         @sprite.body.velocity.y = @velocity
-        #playerPos['name'] = 'downDown'
+        timelordPos['name'] = 'downDown'
       else
         @sprite.animations.stop()
         @sprite.frame = 4
-        #playerPos['name'] = 'none'
+        timelordPos['name'] = 'none'
 
-    #playerMovement.push(playerPos)
+      @movementHistory.push(timelordPos)
 
-    # if cursors.up.isDown && player.body.touching.down
-    #   player.body.velocity.y = -350
-    #   playerMovement.push('up')
+    else if not @playerControlled and @active
 
-    # if game.time.totalElapsedSeconds() > 5
-    #   movePlayer2()
+      movement = @movementHistory[0]
+      @sprite.body.velocity.x = 0
+      @sprite.body.velocity.y = 0
+      if(movement.name == 'leftDown')
+        @sprite.body.velocity.x = -150
+        @sprite.animations.play 'left'
+      else if (movement.name == 'rightDown')
+        @sprite.body.velocity.x = 150
+        @sprite.animations.play 'right'
+      else if (movement.name == 'upDown')
+        @sprite.body.velocity.y = -150
+      else if (movement.name == 'downDown')
+        @sprite.body.velocity.y = 150
+      else if (movement.name == 'up')
+        @sprite.body.velocity.y = -350
+      else
+        @sprite.animations.stop()
+        @sprite.frame = 4
+
+      if @sprite.x != movement.x
+        @sprite.x = movement.x
+
+      if @sprite.y != movement.y
+        @sprite.y = movement.y
+
+      @movementHistory.shift()
 
 
 
