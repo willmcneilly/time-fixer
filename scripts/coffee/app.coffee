@@ -6,6 +6,7 @@ class TimeFixerGame
     @numTimelords = 5
     @timelords = null
     @playerControllerTimelord = null
+    @respawnTime = 10
 
   preload: ->
     console.log ':preload'
@@ -27,7 +28,7 @@ class TimeFixerGame
     @timer.start()
 
   update: =>
-    if @timer.seconds() > 10
+    if @timer.seconds() > @respawnTime
       @playerControllerTimelord.playerControlled = false
       @playerControlled = @timelords[1]
       @playerControlled.playerControlled = true
