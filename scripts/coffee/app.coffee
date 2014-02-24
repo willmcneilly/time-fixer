@@ -43,11 +43,14 @@ class TimeFixerGame
         return
       @playerControlledTimelord.playerControlled = false
       @playerControlledTimelord.pastControlled = true
+      @playerControlledTimelord.futureControlled = false
       @playerControlledTimelordNum = @playerControlledTimelordNum + 1
+      
       @playerControlledTimelord = @timelords[@playerControlledTimelordNum]
       if @playerControlledTimelord is undefined
         return
       @playerControlledTimelord.playerControlled = true
+      @playerControlledTimelord.futureControlled = false
       
 
     for timelord in @timelords 
@@ -68,6 +71,7 @@ class TimeFixerGame
     # set the first timelord to be player controlled
     @playerControlledTimelordNum = 0
     @timelords[@playerControlledTimelordNum ].playerControlled = true
+    @timelords[@playerControlledTimelordNum ].futureControlled = false
     @playerControlledTimelord = @timelords[@playerControlledTimelordNum]
 
 
@@ -135,6 +139,7 @@ class TimeLord
     }
 
     if @playerControlled
+      @sprite.alpha = 1
       if @cursors.left.isDown
         @sprite.body.velocity.x = -@velocity
         @sprite.animations.play 'left'
@@ -188,6 +193,9 @@ class TimeLord
         @sprite.y = movement.y
 
       @currentMove = @currentMove + 1
+
+    if @futureControlled
+      @sprite.alpha = 0
 
 
 
