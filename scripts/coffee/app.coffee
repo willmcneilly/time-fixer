@@ -30,9 +30,9 @@ class TimeFixerGame
   update: =>
     if @timer.seconds() > @respawnTime
       @playerControllerTimelord.playerControlled = false
+      @playerControllerTimelord.pastControlled = true
       @playerControlled = @timelords[1]
       @playerControlled.playerControlled = true
-      @playerControlled.active = true
 
     for timelord in @timelords 
       @game.physics.collide timelord.sprite, @platforms
@@ -43,13 +43,13 @@ class TimeFixerGame
     for i in [0..num]
       timelord = new TimeLord(@game, @cursors)
       timelord.playerControlled = false
-      timelord.active = false
+      timelord.futureControlled = true
+      timelord.pastControlled = false
       @timelords.push(timelord)
 
   initTimelords: ->
     # set the first timelord to be player controlled
     @timelords[0].playerControlled = true
-    @timelords[0].active = true
     @playerControllerTimelord = @timelords[0]
 
   createWorld: ->
@@ -81,9 +81,13 @@ class TimeLord
   constructor: (game, cursors) ->
     # reference to main game object
     @game = game
-    # shown on screen
-    @active = false
-    # controlled by player
+    # Has movement history, controlled by computer
+    @pastControlled = false
+
+    # Has yet to spawn 
+    @futureControlled = true
+    
+    # Currently controlled by player
     @playerControlled = false
     # Movement Data
     @movementHistory = []
@@ -109,7 +113,7 @@ class TimeLord
       y: @sprite.y
     }
 
-    if @playerControlled and @active
+    if @playerControlled
       if @cursors.left.isDown
         @sprite.body.velocity.x = -@velocity
         @sprite.animations.play 'left'
@@ -131,7 +135,7 @@ class TimeLord
 
       @movementHistory.push(timelordPos)
 
-    else if not @playerControlled and @active
+    else if @pastControlled
 
       movement = @movementHistory[0]
       @sprite.body.velocity.x = 0
