@@ -14,23 +14,11 @@ class TimeFixerGame
 
   create: =>
     console.log ':create'
-
     @createWorld()
-  
-    @game.add.sprite 0, 0, 'star'
+    @createStars()
     @cursors = @game.input.keyboard.createCursorKeys()
-
     @createTimelords(@numTimelords)
-    
-    @stars = @game.add.group()
-   
-    for i in [0..12]
-      star = @stars.create i * 70, 0, 'star'
-      star.body.gravity.y = 6
-      star.body.bounce.y = 0.7 + Math.random() * 0.2
-
     @scoreText = @game.add.text 16, 16, 'score: 0', font: '32px arial', fill: '#000'
-
     @timer = new Phaser.Timer(@game)
     @timer.start()
 
@@ -38,14 +26,6 @@ class TimeFixerGame
     for timelord in @timelords 
       @game.physics.collide timelord.sprite, @platforms
       timelord.update()
-
-
-    # if(@timer.seconds() > 5)
-    #   @player.playerControlled = false
-    #   @player2.playerControlled = true
-
-    # @player.update()
-    # @player2.update()
 
   createTimelords: (num) ->
     @timelords = []
@@ -68,6 +48,13 @@ class TimeFixerGame
     @ledge = @platforms.create -150, 250, 'ground'
     @ledge.body.immovable = true
 
+  createStars: =>
+    @game.add.sprite 0, 0, 'star'
+    @stars = @game.add.group() 
+    for i in [0..12]
+      star = @stars.create i * 70, 0, 'star'
+      star.body.gravity.y = 6
+      star.body.bounce.y = 0.7 + Math.random() * 0.2
       
 
       
