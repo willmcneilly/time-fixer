@@ -57,7 +57,12 @@ module.exports = class TimeFixerGame
   createTimelords: (num) ->
     @timelords = []
     for i in [0..num-1]
-      timelord = new TimeLord(@game, @cursors)
+      opts = {}
+      opts.spawnPosition = {
+        x: @game.world.width * Math.random(),
+        y: @game.world.height * Math.random()
+      }
+      timelord = new TimeLord(@game, @cursors, opts)
       timelord.playerControlled = false
       timelord.futureControlled = true
       timelord.pastControlled = false

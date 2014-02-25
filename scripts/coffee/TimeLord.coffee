@@ -1,5 +1,5 @@
 module.exports = class TimeLord
-  constructor: (game, cursors) ->
+  constructor: (game, cursors, opts = {}) ->
     # reference to main game object
     @game = game
     # Has movement history, controlled by computer
@@ -16,7 +16,7 @@ module.exports = class TimeLord
     @sprite = null
     @cursors = cursors
     @velocity = 150
-    @spawnPosition = {x: 32, y: 500}
+    @spawnPosition = opts.spawnPosition ? {x: 32, y: 450}
     @id = null
     @create()
     
