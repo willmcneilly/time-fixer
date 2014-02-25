@@ -1,12 +1,14 @@
-TimeLord = require './TimeLord'
-module.exports = class TimeFixerGame
-  constructor: () ->
-    @game = new Phaser.Game 800, 600, Phaser.AUTO, '', preload: @preload, create: @create, update: @update
+Timelord = require './timelord'
+
+module.exports = class TimeFixerBaseLevel
+  constructor: (game) ->
+    @game = game
     @numTimelords = 5
     @timelords = null
     @playerControlledTimelord = null
     @playerControlledTimelordNum = null
     @respawnTime = 10
+    @respawnPause = 5
 
   preload: ->
     @game.load.image 'sky', '/assets/images/sky.png'
@@ -32,7 +34,6 @@ module.exports = class TimeFixerGame
 
   update: =>
     if @timer.seconds() > @respawnTime
-      console.log(@timer.seconds())
       @clearTimer()
       for timelord in @timelords
         timelord.currentMove = 0
@@ -62,7 +63,7 @@ module.exports = class TimeFixerGame
         x: @game.world.width * Math.random(),
         y: @game.world.height * Math.random()
       }
-      timelord = new TimeLord(@game, @cursors, opts)
+      timelord = new Timelord(@game, @cursors, opts)
       timelord.playerControlled = false
       timelord.futureControlled = true
       timelord.pastControlled = false

@@ -1,2 +1,2 @@
-TimeFixerGame = require './TimeFixerGame'
+TimeFixerGame = require './time-fixer-game'
 game = new TimeFixerGame()

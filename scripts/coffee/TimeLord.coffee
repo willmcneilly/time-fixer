@@ -1,4 +1,4 @@
-module.exports = class TimeLord
+module.exports = class Timelord
   constructor: (game, cursors, opts = {}) ->
     @game = game
     @cursors = cursors
