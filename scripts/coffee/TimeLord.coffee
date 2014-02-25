@@ -29,13 +29,15 @@ module.exports = class Timelord
     switch @currentState
       when 'playerControlled' then @playerContolledState()
       when 'pastControlled' then @pastControlledState()
-      when 'futureControlled' then @futureControlledState()  
+      when 'futureControlled' then @futureControlledState()
+      when 'hidden' then @hiddenState()
 
   setStateTo: (stateName) ->
     switch stateName
       when 'playerControlled' then @triggerPlayerContolledState()
       when 'pastControlled' then @triggerPastControlledState()
       when 'futureControlled' then @triggerFutureControlledState()
+      when 'hidden' then @triggerHiddenState()
 
   triggerPlayerContolledState: ->
     console.log('triggerPlayerContolledState:')
@@ -118,10 +120,13 @@ module.exports = class Timelord
 
   futureControlledState: ->
 
-  stopSpriteMovement: ->
+  triggerHiddenState: ->
     @sprite.body.velocity.x = 0
     @sprite.body.velocity.y = 0
     @sprite.animations.stop()
     @sprite.alpha = 0
+ 
+  hiddenState: ->
+
 
 

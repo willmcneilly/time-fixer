@@ -33,10 +33,10 @@ module.exports = class TimeFixerBaseLevel
     @triggerPrespawnState()
 
   manageState: ->
-    if @currentState == 'prespawn'
+    if @currentState is 'prespawn'
       if @timer.seconds() > @respawnPause 
         @triggerSpawnState()       
-    else if @currentState == 'spawn'
+    else if @currentState is 'spawn'
       if @timer.seconds() > @respawnTime
         @triggerPrespawnState()
       @spawnState()
@@ -73,7 +73,7 @@ module.exports = class TimeFixerBaseLevel
 
     for timelord in @timelords
       timelord.currentMove = 0
-      timelord.stopSpriteMovement()
+
        
   createTimelords: (num) ->
     @timelords = []

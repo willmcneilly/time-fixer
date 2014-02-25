@@ -9,3 +9,4 @@ module.exports = class TimeFixerGame
   registerStates: ->
     @game.state.add('level1', new Level1(@game), true)
     @game.state.add('level2', new Level2(@game))
+    
