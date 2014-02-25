@@ -44,6 +44,9 @@ module.exports = class TimeFixerBaseLevel
   triggerSpawnState: ->
     @clearTimer()
     @currentState = 'spawn'
+
+    if @playerControlledTimelord is undefined
+      return
     
     if @playerControlledTimelordNum is null
       @playerControlledTimelordNum = 0
@@ -70,6 +73,7 @@ module.exports = class TimeFixerBaseLevel
 
     for timelord in @timelords
       timelord.currentMove = 0
+      timelord.stopSpriteMovement()
        
   createTimelords: (num) ->
     @timelords = []

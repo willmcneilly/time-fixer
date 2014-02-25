@@ -79,6 +79,7 @@ module.exports = class Timelord
 
   pastControlledState: ->
     movement = @movementHistory[@currentMove]
+    @sprite.alpha = 0.5
     if movement is undefined
       @currentMove = 0
       return
@@ -116,5 +117,11 @@ module.exports = class Timelord
     @sprite.alpha = 0
 
   futureControlledState: ->
+
+  stopSpriteMovement: ->
+    @sprite.body.velocity.x = 0
+    @sprite.body.velocity.y = 0
+    @sprite.animations.stop()
+    @sprite.alpha = 0
 
 
