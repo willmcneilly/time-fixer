@@ -1,5 +1,11 @@
 Timelord = require './timelord'
 
+## Level States
+##
+## Prespawn
+## Spawn
+##
+
 module.exports = class TimeFixerBaseLevel
   constructor: (game) ->
     @game = game
@@ -9,6 +15,11 @@ module.exports = class TimeFixerBaseLevel
     @playerControlledTimelordNum = null
     @respawnTime = 10
     @respawnPause = 5
+    @states = {
+      prespawn: true
+      spawn: false
+    }
+    @currentState = 'prespawn'
 
   preload: ->
     @game.load.image 'sky', '/assets/images/sky.png'
@@ -24,37 +35,51 @@ module.exports = class TimeFixerBaseLevel
     @initTimelords()
 
     @scoreText = @game.add.text 16, 16, 'score: 0', font: '32px arial', fill: '#000'
-    @timer = new Phaser.Timer(@game)
-    @timer.start()
-
-  clearTimer: ->
-    @timer.stop()
-    @timer = new Phaser.Timer(@game)
-    @timer.start()
+    @initState()
 
   update: =>
-    if @timer.seconds() > @respawnTime
-      @clearTimer()
-      for timelord in @timelords
-        timelord.currentMove = 0
-      if @playerControlledTimelord is undefined
-        return
-      @playerControlledTimelord.playerControlled = false
-      @playerControlledTimelord.pastControlled = true
-      @playerControlledTimelord.futureControlled = false
-      @playerControlledTimelordNum = @playerControlledTimelordNum + 1
-      
-      @playerControlledTimelord = @timelords[@playerControlledTimelordNum]
-      if @playerControlledTimelord is undefined
-        return
-      @playerControlledTimelord.playerControlled = true
-      @playerControlledTimelord.futureControlled = false
-      
+    @manageState()
 
+  initState: ->
+    @timer = new Phaser.Timer(@game)
+    @triggerPrespawnState()
+
+  manageState: ->
+    if @currentState == 'prespawn'
+      if @timer.seconds() > @respawnPause 
+        @triggerSpawnState()       
+    else if @currentState == 'spawn'
+      if @timer.seconds() > @respawnTime
+        @triggerPrespawnState()
+      @spawnState()
+
+  triggerSpawnState: ->
+    @clearTimer()
+    @currentState = 'spawn'
+    for timelord in @timelords
+      timelord.currentMove = 0
+    if @playerControlledTimelord is undefined
+      return
+    @playerControlledTimelord.playerControlled = false
+    @playerControlledTimelord.pastControlled = true
+    @playerControlledTimelord.futureControlled = false
+    @playerControlledTimelordNum = @playerControlledTimelordNum + 1
+    
+    @playerControlledTimelord = @timelords[@playerControlledTimelordNum]
+    if @playerControlledTimelord is undefined
+      return
+    @playerControlledTimelord.playerControlled = true
+    @playerControlledTimelord.futureControlled = false
+
+  spawnState: ->
     for timelord in @timelords 
       @game.physics.collide timelord.sprite, @platforms
       timelord.update()
 
+  triggerPrespawnState: ->
+    @clearTimer()
+    @currentState = 'prespawn'
+       
   createTimelords: (num) ->
     @timelords = []
     for i in [0..num-1]
@@ -77,7 +102,6 @@ module.exports = class TimeFixerBaseLevel
     @timelords[@playerControlledTimelordNum ].futureControlled = false
     @playerControlledTimelord = @timelords[@playerControlledTimelordNum]
 
-
   createWorld: ->
     @game.add.sprite 0, 0, 'sky'
     @platforms = @game.add.group()
@@ -98,3 +122,8 @@ module.exports = class TimeFixerBaseLevel
       star = @stars.create i * 70, 0, 'star'
       star.body.gravity.y = 6
       star.body.bounce.y = 0.7 + Math.random() * 0.2
+
+  clearTimer: ->
+    @timer.stop()
+    @timer = new Phaser.Timer(@game)
+    @timer.start()
