@@ -1,11 +1,5 @@
 Timelord = require './timelord'
 
-## Level States
-##
-## Prespawn
-## Spawn
-##
-
 module.exports = class TimeFixerBaseLevel
   constructor: (game) ->
     @game = game
@@ -15,10 +9,6 @@ module.exports = class TimeFixerBaseLevel
     @playerControlledTimelordNum = null
     @respawnTime = 10
     @respawnPause = 5
-    @states = {
-      prespawn: true
-      spawn: false
-    }
     @currentState = 'prespawn'
 
   preload: ->
@@ -32,8 +22,6 @@ module.exports = class TimeFixerBaseLevel
     @createStars()
     @cursors = @game.input.keyboard.createCursorKeys()
     @createTimelords(@numTimelords)
-    @initTimelords()
-
     @scoreText = @game.add.text 16, 16, 'score: 0', font: '32px arial', fill: '#000'
     @initState()
 
@@ -56,20 +44,20 @@ module.exports = class TimeFixerBaseLevel
   triggerSpawnState: ->
     @clearTimer()
     @currentState = 'spawn'
-    for timelord in @timelords
-      timelord.currentMove = 0
-    if @playerControlledTimelord is undefined
-      return
-    @playerControlledTimelord.playerControlled = false
-    @playerControlledTimelord.pastControlled = true
-    @playerControlledTimelord.futureControlled = false
-    @playerControlledTimelordNum = @playerControlledTimelordNum + 1
     
-    @playerControlledTimelord = @timelords[@playerControlledTimelordNum]
+    if @playerControlledTimelordNum is null
+      @playerControlledTimelordNum = 0
+      @playerControlledTimelord = @timelords[@playerControlledTimelordNum]
+    else
+      @playerControlledTimelord.setStateTo('pastControlled')
+      @playerControlledTimelordNum = @playerControlledTimelordNum + 1
+      @playerControlledTimelord = @timelords[@playerControlledTimelordNum]
+
     if @playerControlledTimelord is undefined
       return
-    @playerControlledTimelord.playerControlled = true
-    @playerControlledTimelord.futureControlled = false
+
+    @playerControlledTimelord.setStateTo('playerControlled')
+
 
   spawnState: ->
     for timelord in @timelords 
@@ -79,6 +67,9 @@ module.exports = class TimeFixerBaseLevel
   triggerPrespawnState: ->
     @clearTimer()
     @currentState = 'prespawn'
+
+    for timelord in @timelords
+      timelord.currentMove = 0
        
   createTimelords: (num) ->
     @timelords = []
@@ -89,18 +80,8 @@ module.exports = class TimeFixerBaseLevel
         y: @game.world.height * Math.random()
       }
       timelord = new Timelord(@game, @cursors, opts)
-      timelord.playerControlled = false
-      timelord.futureControlled = true
-      timelord.pastControlled = false
       timelord.id = i
       @timelords.push(timelord)
-
-  initTimelords: ->
-    # set the first timelord to be player controlled
-    @playerControlledTimelordNum = 0
-    @timelords[@playerControlledTimelordNum ].playerControlled = true
-    @timelords[@playerControlledTimelordNum ].futureControlled = false
-    @playerControlledTimelord = @timelords[@playerControlledTimelordNum]
 
   createWorld: ->
     @game.add.sprite 0, 0, 'sky'

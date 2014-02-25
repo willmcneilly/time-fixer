@@ -9,11 +9,7 @@ module.exports = class Timelord
     @currentMove = 0
     @sprite = null
     @id = null
-
-    # States 
-    @pastControlled = opts.pastControlled ? false
-    @futureControlled = opts.futureControlled ? true 
-    @playerControlled = opts.playerControlled ? false
+    @currentState = null
 
     @create()
     
@@ -24,8 +20,29 @@ module.exports = class Timelord
 
     @sprite.animations.add 'left', [0..3], 10, true
     @sprite.animations.add 'right', [5..8], 10, true
+    @setStateTo('futureControlled')
 
   update: ->
+    @manageState()    
+
+  manageState: ->
+    switch @currentState
+      when 'playerControlled' then @playerContolledState()
+      when 'pastControlled' then @pastControlledState()
+      when 'futureControlled' then @futureControlledState()  
+
+  setStateTo: (stateName) ->
+    switch stateName
+      when 'playerControlled' then @triggerPlayerContolledState()
+      when 'pastControlled' then @triggerPastControlledState()
+      when 'futureControlled' then @triggerFutureControlledState()
+
+  triggerPlayerContolledState: ->
+    console.log('triggerPlayerContolledState:')
+    @currentState = 'playerControlled'
+    @sprite.alpha = 1
+
+  playerContolledState: ->
     @sprite.body.velocity.x = 0
     @sprite.body.velocity.y = 0
 
@@ -34,61 +51,70 @@ module.exports = class Timelord
       y: @sprite.y
     }
 
-    if @playerControlled
-      @sprite.alpha = 1
-      if @cursors.left.isDown
-        @sprite.body.velocity.x = -@velocity
-        @sprite.animations.play 'left'
-        timelordPos['name'] = 'leftDown'       
-      else if @cursors.right.isDown
-        @sprite.body.velocity.x = @velocity
-        @sprite.animations.play 'right'
-        timelordPos['name'] = 'rightDown'
-      else if @cursors.up.isDown
-        @sprite.body.velocity.y = -@velocity
-        timelordPos['name'] = 'upDown'
-      else if @cursors.down.isDown
-        @sprite.body.velocity.y = @velocity
-        timelordPos['name'] = 'downDown'
-      else
-        @sprite.animations.stop()
-        @sprite.frame = 4
-        timelordPos['name'] = 'none'
+    if @cursors.left.isDown
+      @sprite.body.velocity.x = -@velocity
+      @sprite.animations.play 'left'
+      timelordPos['name'] = 'leftDown'       
+    else if @cursors.right.isDown
+      @sprite.body.velocity.x = @velocity
+      @sprite.animations.play 'right'
+      timelordPos['name'] = 'rightDown'
+    else if @cursors.up.isDown
+      @sprite.body.velocity.y = -@velocity
+      timelordPos['name'] = 'upDown'
+    else if @cursors.down.isDown
+      @sprite.body.velocity.y = @velocity
+      timelordPos['name'] = 'downDown'
+    else
+      @sprite.animations.stop()
+      @sprite.frame = 4
+      timelordPos['name'] = 'none'
 
-      @movementHistory.push(timelordPos)
+    @movementHistory.push(timelordPos)
 
-    else if @pastControlled
-      @sprite.alpha = 0.5
-      movement = @movementHistory[@currentMove]
-      if movement is undefined
-        @currentMove = 0
-        return
+  triggerPastControlledState: ->
+    console.log('triggerPastControlledState:')
+    @currentState = 'pastControlled'
+    @sprite.alpha = 0.5
 
-      @sprite.body.velocity.x = 0
-      @sprite.body.velocity.y = 0
-      if(movement.name == 'leftDown')
-        @sprite.body.velocity.x = -150
-        @sprite.animations.play 'left'
-      else if (movement.name == 'rightDown')
-        @sprite.body.velocity.x = 150
-        @sprite.animations.play 'right'
-      else if (movement.name == 'upDown')
-        @sprite.body.velocity.y = -150
-      else if (movement.name == 'downDown')
-        @sprite.body.velocity.y = 150
-      else if (movement.name == 'up')
-        @sprite.body.velocity.y = -350
-      else
-        @sprite.animations.stop()
-        @sprite.frame = 4
+  pastControlledState: ->
+    movement = @movementHistory[@currentMove]
+    if movement is undefined
+      @currentMove = 0
+      return
 
-      if @sprite.x != movement.x
-        @sprite.x = movement.x
+    @sprite.body.velocity.x = 0
+    @sprite.body.velocity.y = 0
 
-      if @sprite.y != movement.y
-        @sprite.y = movement.y
+    if(movement.name == 'leftDown')
+      @sprite.body.velocity.x = -150
+      @sprite.animations.play 'left'
+    else if (movement.name == 'rightDown')
+      @sprite.body.velocity.x = 150
+      @sprite.animations.play 'right'
+    else if (movement.name == 'upDown')
+      @sprite.body.velocity.y = -150
+    else if (movement.name == 'downDown')
+      @sprite.body.velocity.y = 150
+    else if (movement.name == 'up')
+      @sprite.body.velocity.y = -350
+    else
+      @sprite.animations.stop()
+      @sprite.frame = 4
 
-      @currentMove = @currentMove + 1
+    if @sprite.x != movement.x
+      @sprite.x = movement.x
 
-    if @futureControlled
-      @sprite.alpha = 0
+    if @sprite.y != movement.y
+      @sprite.y = movement.y
+
+    @currentMove = @currentMove + 1
+
+  triggerFutureControlledState: ->
+    console.log('triggerFutureControlledState:')
+    @currentState = 'futureControlled'
+    @sprite.alpha = 0
+
+  futureControlledState: ->
+
+
