@@ -1,7 +1,3 @@
-# define states
-# trigger code before state is changed
-# trigger code when after state is changed
-
 module.exports = class StateMachine
   
   constructor: (states) ->
