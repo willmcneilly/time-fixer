@@ -1,4 +1,4 @@
-TimeFixerBaseLevel = require './time-fixer-base-level'
+Level1 = require './level-1'
 
 module.exports = class TimeFixerGame
   constructor: () ->
@@ -6,4 +6,4 @@ module.exports = class TimeFixerGame
     @registerStates()
 
   registerStates: ->
-    @game.state.add('level', new TimeFixerBaseLevel(@game), true)
+    @game.state.add('level', new Level1(@game), true)
