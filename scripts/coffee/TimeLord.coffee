@@ -1,23 +1,20 @@
 module.exports = class TimeLord
   constructor: (game, cursors, opts = {}) ->
-    # reference to main game object
     @game = game
-    # Has movement history, controlled by computer
-    @pastControlled = false
+    @cursors = cursors
 
-    # Has yet to spawn 
-    @futureControlled = true
-    
-    # Currently controlled by player
-    @playerControlled = false
-    # Movement Data
+    @velocity = opts.velocity ? 150
+    @spawnPosition = opts.spawnPosition ? {x: 32, y: 450} 
     @movementHistory = []
     @currentMove = 0
     @sprite = null
-    @cursors = cursors
-    @velocity = 150
-    @spawnPosition = opts.spawnPosition ? {x: 32, y: 450}
     @id = null
+
+    # States 
+    @pastControlled = opts.pastControlled ? false
+    @futureControlled = opts.futureControlled ? true 
+    @playerControlled = opts.playerControlled ? false
+
     @create()
     
   create: ->
