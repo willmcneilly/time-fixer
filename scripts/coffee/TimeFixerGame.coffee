@@ -9,14 +9,12 @@ module.exports = class TimeFixerGame
     @respawnTime = 10
 
   preload: ->
-    console.log ':preload'
     @game.load.image 'sky', '/assets/images/sky.png'
     @game.load.image 'ground', '/assets/images/platform.png'
     @game.load.image 'star', '/assets/images/star.png'
     @game.load.spritesheet 'dude', '/assets/images/dude.png', 32, 48
 
   create: =>
-    console.log ':create'
     @createWorld()
     @createStars()
     @cursors = @game.input.keyboard.createCursorKeys()

@@ -16,11 +16,12 @@ module.exports = class TimeLord
     @sprite = null
     @cursors = cursors
     @velocity = 150
+    @spawnPosition = {x: 32, y: 500}
     @id = null
     @create()
     
   create: ->
-    @sprite = @game.add.sprite 32, @game.world.height - 150, 'dude'
+    @sprite = @game.add.sprite @spawnPosition.x, @spawnPosition.y, 'dude'
     @sprite.body.gravity.y = null
     @sprite.body.collideWorldBounds = true
 
