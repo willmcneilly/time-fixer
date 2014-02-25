@@ -1,4 +1,5 @@
 Level1 = require './level-1'
+Level2 = require './level-2'
 
 module.exports = class TimeFixerGame
   constructor: () ->
@@ -6,4 +7,5 @@ module.exports = class TimeFixerGame
     @registerStates()
 
   registerStates: ->
-    @game.state.add('level', new Level1(@game), true)
+    @game.state.add('level1', new Level1(@game), true)
+    @game.state.add('level2', new Level2(@game))
