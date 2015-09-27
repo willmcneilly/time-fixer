@@ -1,5 +1,5 @@
 module.exports = class StateMachine
-  
+
   constructor: (states) ->
     @states = states
     @activeStates = []
@@ -19,12 +19,18 @@ module.exports = class StateMachine
   getStates: ->
     @activeStates
 
+  runStates: ->
+    @activeStates.forEach (stateName) =>
+      triggeredState = _.find @states, (state) =>
+        return state.name == stateName
+      triggeredState.behaviour()
+
   isActive: (stateName) ->
     found = _.find @activeStates, (state) ->
       return state == stateName
     if found
       return true
-    else 
+    else
       return false
 
   triggerPreState: (stateName) ->
@@ -50,12 +56,3 @@ module.exports = class StateMachine
       return state.name == stateName
     if _.isFunction(triggeredState.postRemove)
       triggeredState.postRemove()
-
-
-
-
-
-
-
-
-

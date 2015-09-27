@@ -1,4 +1,5 @@
 Timelord = require './timelord'
+StateMachine = require './state-machine'
 
 module.exports = class TimeFixerBaseLevel
   constructor: (game) ->
@@ -17,7 +18,19 @@ module.exports = class TimeFixerBaseLevel
     @game.load.image 'star', '/assets/images/star.png'
     @game.load.spritesheet 'dude', '/assets/images/dude.png', 32, 48
 
+
   create: =>
+    @statemachine = new StateMachine(
+      [
+        {
+          name: 'prespawn'
+
+        },
+        {
+          name: 'spawn'
+        }
+      ]
+    )
     @createWorld()
     @createStars()
     @cursors = @game.input.keyboard.createCursorKeys()
@@ -34,8 +47,8 @@ module.exports = class TimeFixerBaseLevel
 
   manageState: ->
     if @currentState is 'prespawn'
-      if @timer.seconds() > @respawnPause 
-        @triggerSpawnState()       
+      if @timer.seconds() > @respawnPause
+        @triggerSpawnState()
     else if @currentState is 'spawn'
       if @timer.seconds() > @respawnTime
         @triggerPrespawnState()
@@ -47,23 +60,24 @@ module.exports = class TimeFixerBaseLevel
 
     if @playerControlledTimelord is undefined
       return
-    
+
     if @playerControlledTimelordNum is null
       @playerControlledTimelordNum = 0
       @playerControlledTimelord = @timelords[@playerControlledTimelordNum]
     else
-      @playerControlledTimelord.setStateTo('pastControlled')
+      @playerControlledTimelord.statemachine.removeState('playerControlled')
+      @playerControlledTimelord.statemachine.setState('computerControlled')
       @playerControlledTimelordNum = @playerControlledTimelordNum + 1
       @playerControlledTimelord = @timelords[@playerControlledTimelordNum]
 
     if @playerControlledTimelord is undefined
       return
 
-    @playerControlledTimelord.setStateTo('playerControlled')
+    @playerControlledTimelord.statemachine.setState('playerControlled')
 
 
   spawnState: ->
-    for timelord in @timelords 
+    for timelord in @timelords
       @game.physics.collide timelord.sprite, @platforms
       timelord.update()
 
@@ -74,7 +88,7 @@ module.exports = class TimeFixerBaseLevel
     for timelord in @timelords
       timelord.currentMove = 0
 
-       
+
   createTimelords: (num) ->
     @timelords = []
     for i in [0..num-1]
@@ -102,7 +116,7 @@ module.exports = class TimeFixerBaseLevel
 
   createStars: =>
     @game.add.sprite 0, 0, 'star'
-    @stars = @game.add.group() 
+    @stars = @game.add.group()
     for i in [0..12]
       star = @stars.create i * 70, 0, 'star'
       star.body.gravity.y = 6
